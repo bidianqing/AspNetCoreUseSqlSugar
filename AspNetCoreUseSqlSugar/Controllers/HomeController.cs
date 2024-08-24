@@ -19,7 +19,7 @@ namespace AspNetCoreUseSqlSugar.Controllers
         [HttpGet]
         public List<User> Get()
         {
-            return _db.Queryable<User>().ToList();
+            return _db.Queryable<User>().Where(x => x.Id == 1).ToList();
         }
     }
 }

@@ -1,4 +1,5 @@
 using SqlSugar;
+using System.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,29 +9,36 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<ISqlSugarClient>(sp =>
 {
-    var config = new ConnectionConfig
+    var loggerFactory = sp.GetService<ILoggerFactory>();
+    var logger = loggerFactory.CreateLogger<ISqlSugarClient>();
+
+    var configs = new List<ConnectionConfig>
     {
-        DbType = DbType.MySql,
-        ConnectionString = "server=127.0.0.1;port=3306;database=demo;user id=root;password=root;CharacterSet=utf8mb4;SslMode=None;Allow User Variables=true;",
-        IsAutoCloseConnection = true,
-        AopEvents = new AopEvents
+        new ConnectionConfig
         {
-            OnLogExecuting = (sql, parameters) =>
+            ConfigId = "default",
+            DbType = DbType.MySql,
+            ConnectionString = "server=127.0.0.1;port=3306;database=demo;user id=root;password=root;CharacterSet=utf8mb4;SslMode=None;Allow User Variables=true;",
+            IsAutoCloseConnection = true,
+            AopEvents = new AopEvents
             {
-                Console.WriteLine(sql);
+                OnLogExecuting = (sql, parameters) =>
+                {
+                    if (logger.IsEnabled(LogLevel.Debug))
+                    {
+                        logger.LogDebug($"Sql£º{sql} | Parameters£º{ string.Join(",", parameters.Select(x => $"{x.ParameterName} = {x.Value}")) }");
+                    }
+                }
             }
         }
     };
 
-    return new SqlSugarClient(config);
+    return new SqlSugarClient(configs);
 });
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-
-app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
