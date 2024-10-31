@@ -1,3 +1,4 @@
+using AspNetCoreUseSqlSugar;
 using SqlSugar;
 using System.Linq;
 
@@ -28,13 +29,19 @@ builder.Services.AddScoped<ISqlSugarClient>(sp =>
                     {
                         logger.LogDebug($"Sql£º{sql} | Parameters£º{ string.Join(",", parameters.Select(x => $"{x.ParameterName} = {x.Value}")) }");
                     }
+                },
+                DataExecuting = (obj, model) =>
+                {
+                    logger.LogInformation(model.EntityName);
                 }
             }
         }
     };
-
+    
     return new SqlSugarClient(configs);
 });
+
+builder.Services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
 
 var app = builder.Build();
 
