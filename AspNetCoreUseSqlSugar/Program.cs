@@ -33,12 +33,18 @@ builder.Services.AddScoped<ISqlSugarClient>(sp =>
                 DataExecuting = (obj, model) =>
                 {
                     logger.LogInformation(model.EntityName);
-                }
-            }
+                },
+            },
+
         }
     };
-    
-    return new SqlSugarClient(configs);
+
+    var db = new SqlSugarClient(configs);
+
+    db.QueryFilter.AddTableFilter<User>(u => !u.IsDeleted);
+    db.QueryFilter.AddTableFilter<Order>(u => !u.IsDeleted);
+
+    return db;
 });
 
 builder.Services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
