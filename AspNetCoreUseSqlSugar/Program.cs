@@ -35,7 +35,13 @@ builder.Services.AddScoped<ISqlSugarClient>(sp =>
                     logger.LogInformation(model.EntityName);
                 },
             },
-
+        },
+        new ConnectionConfig
+        {
+            ConfigId = "blog",
+            DbType = DbType.SqlServer,
+            ConnectionString = "server=127.0.0.1;user id=sa;password=sa;database=BLOG;MultipleActiveResultSets=true",
+            IsAutoCloseConnection = true,
         }
     };
 
@@ -52,6 +58,8 @@ builder.Services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseChangeDatabase();
+
 app.MapControllers();
 
 app.Run();
