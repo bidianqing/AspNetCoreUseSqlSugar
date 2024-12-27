@@ -27,7 +27,8 @@ builder.Services.AddScoped<ISqlSugarClient>(sp =>
                 {
                     if (logger.IsEnabled(LogLevel.Debug))
                     {
-                        logger.LogDebug($"Sql£º{sql} | Parameters£º{ string.Join(",", parameters.Select(x => $"{x.ParameterName} = {x.Value}")) }");
+                        //var totalExecutedTime = client.Ado.SqlExecutionTime.TotalMilliseconds;
+                        logger.LogDebug("Sql Executed in {time} ms \r\n {sql}", 1000, UtilMethods.GetSqlString(DbType.SqlServer, sql, parameters));
                     }
                 },
                 DataExecuting = (obj, model) =>
