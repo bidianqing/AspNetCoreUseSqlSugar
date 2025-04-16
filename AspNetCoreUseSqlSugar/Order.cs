@@ -3,12 +3,9 @@
 namespace AspNetCoreUseSqlSugar
 {
     [SugarTable("tb_order")]
-    public class Order
+    public class Order : BaseAuditableEntity
     {
-        [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
-        public int Id { get; set; }
-
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
 
         public string OrderNo { get; set; }
 
@@ -19,7 +16,7 @@ namespace AspNetCoreUseSqlSugar
     {
         public string UserName { get; set; }
 
-        public int OrderId { get; set; }
+        public Guid OrderId { get; set; }
 
         public string OrderNo { get; set; }
     }

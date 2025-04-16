@@ -22,8 +22,6 @@ namespace AspNetCoreUseSqlSugar.Controllers
         [HttpGet]
         public async Task<User> Get()
         {
-            //return _userRepository.GetList();
-
             _db.Queryable<Order>()
                 .LeftJoin<User>((t1, t2) => t1.UserId == t2.Id)
                 .Select((t1, t2) => new OrderModel
@@ -33,7 +31,13 @@ namespace AspNetCoreUseSqlSugar.Controllers
                     OrderNo = t1.OrderNo
                 })
                 .ToList();
-            return await _userRepository.GetByIdAsync(1);
+
+            var user = await _userRepository.InsertReturnEntityAsync(new User
+            {
+                Name = "tom"
+            });
+
+            return await _userRepository.GetByIdAsync(user.Id);
         }
     }
 }

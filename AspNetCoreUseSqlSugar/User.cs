@@ -3,11 +3,8 @@
 namespace AspNetCoreUseSqlSugar
 {
     [SugarTable("tb_user")]
-    public class User
+    public class User : BaseAuditableEntity
     {
-        [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
-        public int Id { get; set; }
-
         public string Name { get; set; }
 
         public bool IsDeleted { get; set; }
