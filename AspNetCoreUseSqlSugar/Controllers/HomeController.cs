@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SqlSugar;
+using System.Threading.Tasks;
 
 namespace AspNetCoreUseSqlSugar.Controllers
 {
@@ -19,7 +20,7 @@ namespace AspNetCoreUseSqlSugar.Controllers
         }
 
         [HttpGet]
-        public List<User> Get()
+        public async Task<User> Get()
         {
             //return _userRepository.GetList();
 
@@ -32,7 +33,7 @@ namespace AspNetCoreUseSqlSugar.Controllers
                     OrderNo = t1.OrderNo
                 })
                 .ToList();
-            return _userRepository.Context.Queryable<User>().Where(x => x.Id == 1).ToList();
+            return await _userRepository.GetByIdAsync(1);
         }
     }
 }
