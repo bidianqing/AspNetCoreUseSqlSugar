@@ -10,6 +10,17 @@ namespace AspNetCoreUseSqlSugar
 
         public int UserId { get; set; }
 
+        public string OrderNo { get; set; }
+
         public bool IsDeleted { get; set; }
+    }
+
+    public class OrderModel
+    {
+        public string UserName { get; set; }
+
+        public int OrderId { get; set; }
+
+        public string OrderNo { get; set; }
     }
 }

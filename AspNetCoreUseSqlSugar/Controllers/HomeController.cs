@@ -25,12 +25,14 @@ namespace AspNetCoreUseSqlSugar.Controllers
 
             _db.Queryable<Order>()
                 .LeftJoin<User>((t1, t2) => t1.UserId == t2.Id)
-                .Select((t1, t2) => new Order
+                .Select((t1, t2) => new OrderModel
                 {
-                    UserId = t1.Id
+                    UserName = t2.Name,
+                    OrderId = t1.Id,
+                    OrderNo = t1.OrderNo
                 })
                 .ToList();
-            return _db.Queryable<User>().Where(x => x.Id == 1).ToList();
+            return _userRepository.Context.Queryable<User>().Where(x => x.Id == 1).ToList();
         }
     }
 }
