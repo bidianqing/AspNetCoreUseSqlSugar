@@ -20,7 +20,7 @@ namespace AspNetCoreUseSqlSugar.Controllers
         }
 
         [HttpGet]
-        public async Task<User> Get()
+        public async Task<List<User>> Get()
         {
             _db.Queryable<Order>()
                 .LeftJoin<User>((t1, t2) => t1.UserId == t2.Id)
@@ -32,12 +32,22 @@ namespace AspNetCoreUseSqlSugar.Controllers
                 })
                 .ToList();
 
-            var user = await _userRepository.InsertReturnEntityAsync(new User
+            await _userRepository.InsertAsync(new User
             {
                 Name = "tom"
             });
 
-            return await _userRepository.GetByIdAsync(user.Id);
+            await _userRepository.InsertRangeAsync(new List<User>
+            {
+                new() {
+                    Name = "jerry"
+                },
+                new() {
+                    Name = "lucy"
+                }
+            });
+
+            return await _userRepository.GetListAsync();
         }
     }
 }

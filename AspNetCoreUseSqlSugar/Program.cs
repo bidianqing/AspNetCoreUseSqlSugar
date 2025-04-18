@@ -61,7 +61,9 @@ builder.Services.AddScoped<ISqlSugarClient>(sp =>
             if (entityInfo.OperationType == DataFilterType.InsertByObject)
             {
                 // 主键Id生成策略
-                if (entityInfo.PropertyName == nameof(BaseEntity.Id))
+                if (entityInfo.PropertyName == nameof(BaseEntity.Id) 
+                    && entityInfo.EntityValue is BaseEntity baseEntity
+                    && baseEntity.Id == Guid.Empty)
                 {
                     entityInfo.SetValue(Guid.CreateVersion7(DateTimeOffset.Now));
                 }
