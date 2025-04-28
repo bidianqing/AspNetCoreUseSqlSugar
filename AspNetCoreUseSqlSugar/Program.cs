@@ -17,25 +17,9 @@ builder.Services.AddScoped<ISqlSugarClient>(sp =>
 
     var httpContextAccessor = sp.GetService<IHttpContextAccessor>();
 
-    var configs = new List<ConnectionConfig>
-    {
-        new ConnectionConfig
-        {
-            ConfigId = "default",
-            DbType = DbType.MySqlConnector,
-            ConnectionString = "server=127.0.0.1;port=3306;database=demo;user id=root;password=root;CharacterSet=utf8mb4;SslMode=None;Allow User Variables=true;",
-            IsAutoCloseConnection = true,
-        },
-        new ConnectionConfig
-        {
-            ConfigId = "blog",
-            DbType = DbType.SqlServer,
-            ConnectionString = "server=127.0.0.1;user id=sa;password=sa;database=BLOG;MultipleActiveResultSets=true",
-            IsAutoCloseConnection = true,
-        }
-    };
+    var configs = builder.Configuration.GetSection("DbConfigs").Get<ConnectionConfig[]>();
 
-    var db = new SqlSugarClient(configs);
+    var db = new SqlSugarClient([.. configs]);
 
     //db.QueryFilter.AddTableFilter<User>(u => !u.IsDeleted, QueryFilterProvider.FilterJoinPosition.Where);
     //db.QueryFilter.AddTableFilter<Order>(u => !u.IsDeleted);
