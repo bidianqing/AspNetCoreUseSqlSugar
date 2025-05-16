@@ -22,8 +22,12 @@ namespace AspNetCoreUseSqlSugar.Controllers
         [HttpGet]
         public async Task<List<User>> Get()
         {
+            var exp = Expressionable.Create<Order, User>();
+            exp.And((t1, t2) => t1.OrderNo != null && t1.OrderNo != "");
+
             _db.Queryable<Order>()
                 .LeftJoin<User>((t1, t2) => t1.UserId == t2.Id)
+                .Where(exp.ToExpression())
                 .Select((t1, t2) => new OrderModel
                 {
                     UserName = t2.Name,
