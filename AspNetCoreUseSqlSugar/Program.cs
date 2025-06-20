@@ -49,7 +49,7 @@ builder.Services.AddScoped<ISqlSugarClient>(sp =>
                     && entityInfo.EntityValue is BaseEntity baseEntity
                     && baseEntity.Id == Guid.Empty)
                 {
-                    entityInfo.SetValue(Guid.CreateVersion7(DateTimeOffset.Now));
+                    entityInfo.SetValue(Guid.CreateVersion7());
                 }
 
                 // 创建时间、更新时间生成策略
