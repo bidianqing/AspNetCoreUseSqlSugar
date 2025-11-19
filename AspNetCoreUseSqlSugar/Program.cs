@@ -1,6 +1,5 @@
 using AspNetCoreUseSqlSugar;
 using SqlSugar;
-using System.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,13 +52,13 @@ builder.Services.AddScoped<ISqlSugarClient>(sp =>
                 }
 
                 // 创建时间、更新时间生成策略
-                if (entityInfo.PropertyName == nameof(BaseAuditableEntity.Created) || entityInfo.PropertyName == nameof(BaseAuditableEntity.LastModified))
+                if (entityInfo.PropertyName == nameof(BaseAuditableEntity.CreatedOn) || entityInfo.PropertyName == nameof(BaseAuditableEntity.UpdatedOn))
                 {
-                    entityInfo.SetValue(DateTimeOffset.Now);
+                    entityInfo.SetValue(DateTime.Now);
                 }
 
                 // 创建人、更新人生成策略
-                if (entityInfo.PropertyName == nameof(BaseAuditableEntity.CreatedBy) || entityInfo.PropertyName == nameof(BaseAuditableEntity.LastModifiedBy))
+                if (entityInfo.PropertyName == nameof(BaseAuditableEntity.CreatedBy) || entityInfo.PropertyName == nameof(BaseAuditableEntity.UpdatedBy))
                 {
                     entityInfo.SetValue(httpContextAccessor.HttpContext?.User.Identity.Name ?? "匿名用户");
                 }
@@ -67,13 +66,13 @@ builder.Services.AddScoped<ISqlSugarClient>(sp =>
             else if (entityInfo.OperationType == DataFilterType.UpdateByObject)
             {
                 // 更新时间生成策略
-                if (entityInfo.PropertyName == nameof(BaseAuditableEntity.LastModified))
+                if (entityInfo.PropertyName == nameof(BaseAuditableEntity.UpdatedOn))
                 {
-                    entityInfo.SetValue(DateTimeOffset.Now);
+                    entityInfo.SetValue(DateTime.Now);
                 }
 
                 // 更新人生成策略
-                if (entityInfo.PropertyName == nameof(BaseAuditableEntity.LastModifiedBy))
+                if (entityInfo.PropertyName == nameof(BaseAuditableEntity.UpdatedBy))
                 {
                     entityInfo.SetValue(httpContextAccessor.HttpContext?.User.Identity.Name ?? "匿名用户");
                 }
