@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using SqlSugar;
-using System.Threading.Tasks;
+using System.Text.Json.Nodes;
 
 namespace AspNetCoreUseSqlSugar.Controllers
 {
@@ -36,10 +37,16 @@ namespace AspNetCoreUseSqlSugar.Controllers
             //    })
             //    .ToList();
 
-            //await _userRepository.InsertAsync(new User
-            //{
-            //    Name = "tom"
-            //});
+            await _userRepository.InsertAsync(new User
+            {
+                Name = "tom",
+                Tags = new JArray { "老师", "工作中" },
+                Address = new JObject
+                {
+                    { "Province", "广东省" },
+                    { "City", "广州市" }
+                }
+            });
 
             //await _userRepository.InsertRangeAsync(new List<User>
             //{
@@ -51,7 +58,7 @@ namespace AspNetCoreUseSqlSugar.Controllers
             //    }
             //});
 
-            return await _userRepository.GetListAsync();
+            return await _userRepository.GetListAsync(u => SqlFunc.JsonArrayAny(u.Tags, "老师"));
         }
     }
 }
