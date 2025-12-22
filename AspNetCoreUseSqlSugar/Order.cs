@@ -17,6 +17,8 @@ namespace AspNetCoreUseSqlSugar
     [SugarTable("tb_order_item")]
     public class OrderItem : BaseAuditableEntity
     {
+        public bool IsDeleted { get; set; }
+
         [SugarColumn(ColumnName = "order_id")]
         public Guid OrderId { get; set; }
 

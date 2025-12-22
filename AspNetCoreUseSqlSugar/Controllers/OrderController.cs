@@ -48,8 +48,8 @@ namespace AspNetCoreUseSqlSugar.Controllers
                 UnitPrice = 100.01m,
                 Quantity = 2
             };
-            await _orderItemRepository.InsertAsync(orderItem1);
-            await _orderItemRepository.InsertAsync(orderItem2);
+            
+            await _orderItemRepository.InsertRangeAsync(new[] { orderItem1, orderItem2 });
 
             /*
             SELECT DISTINCT o.*
