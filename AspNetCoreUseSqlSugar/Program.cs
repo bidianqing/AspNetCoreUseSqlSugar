@@ -24,64 +24,69 @@ builder.Services.AddScoped<ISqlSugarClient>(sp =>
     //db.QueryFilter.AddTableFilter<User>(u => !u.IsDeleted, QueryFilterProvider.FilterJoinPosition.Where);
     //db.QueryFilter.AddTableFilter<Order>(u => !u.IsDeleted);
 
-    db.Aop.OnLogExecuted = (sql, parameters) =>
+    foreach (var config in configs)
     {
-        var totalExecutedTime = db.Ado.SqlExecutionTime.TotalMilliseconds;
-        if (logger.IsEnabled(LogLevel.Debug))
+        db.Aop.OnLogExecuted = (sql, parameters) =>
         {
-            logger.LogDebug("Sql Executed in {time} ms \r\n{sql}", totalExecutedTime, UtilMethods.GetSqlString(config.DbType, sql, parameters));
-        }
+            var totalExecutedTime = db.Ado.SqlExecutionTime.TotalMilliseconds;
+            if (logger.IsEnabled(LogLevel.Debug))
+            {
+                logger.LogDebug("Sql Executed in {time} ms \r\n{sql}", totalExecutedTime, UtilMethods.GetSqlString(config.DbType, sql, parameters));
+            }
 
-        if (totalExecutedTime > 1000)
+            if (totalExecutedTime > 1000)
+            {
+                logger.LogWarning("Sql Executed in {time} ms \r\n{sql}", totalExecutedTime, UtilMethods.GetSqlString(config.DbType, sql, parameters));
+            }
+        };
+
+        db.Aop.DataExecuting = (oldValue, entityInfo) =>
         {
-            logger.LogWarning("Sql Executed in {time} ms \r\n{sql}", totalExecutedTime, UtilMethods.GetSqlString(config.DbType, sql, parameters));
-        }
-    };
+            if (entityInfo.OperationType == DataFilterType.InsertByObject)
+            {
+                // 主键Id生成策略
+                if (entityInfo.PropertyName == nameof(BaseEntity.Id)
+                    && entityInfo.EntityValue is BaseEntity baseEntity
+                    && baseEntity.Id == Guid.Empty)
+                {
+                    entityInfo.SetValue(Guid.CreateVersion7());
+                }
 
-    db.Aop.DataExecuting = (oldValue, entityInfo) =>
-    {
-        if (entityInfo.OperationType == DataFilterType.InsertByObject)
+                // 创建时间、更新时间生成策略
+                if (entityInfo.PropertyName == nameof(BaseAuditableEntity.CreatedOn) || entityInfo.PropertyName == nameof(BaseAuditableEntity.UpdatedOn))
+                {
+                    entityInfo.SetValue(DateTime.Now);
+                }
+
+                // 创建人、更新人生成策略
+                if (entityInfo.PropertyName == nameof(BaseAuditableEntity.CreatedBy) || entityInfo.PropertyName == nameof(BaseAuditableEntity.UpdatedBy))
+                {
+                    entityInfo.SetValue(httpContextAccessor.HttpContext?.User.Identity.Name ?? "匿名用户");
+                }
+            }
+            else if (entityInfo.OperationType == DataFilterType.UpdateByObject)
+            {
+                // 更新时间生成策略
+                if (entityInfo.PropertyName == nameof(BaseAuditableEntity.UpdatedOn))
+                {
+                    entityInfo.SetValue(DateTime.Now);
+                }
+
+                // 更新人生成策略
+                if (entityInfo.PropertyName == nameof(BaseAuditableEntity.UpdatedBy))
+                {
+                    entityInfo.SetValue(httpContextAccessor.HttpContext?.User.Identity.Name ?? "匿名用户");
+                }
+            }
+        };
+
+        db.Aop.OnError = (ex) =>
         {
-            // 主键Id生成策略
-            if (entityInfo.PropertyName == nameof(BaseEntity.Id)
-                && entityInfo.EntityValue is BaseEntity baseEntity
-                && baseEntity.Id == Guid.Empty)
-            {
-                entityInfo.SetValue(Guid.CreateVersion7());
-            }
+            logger.LogError(ex, "SqlSugarException with sql \r\n {sql}", 
+                UtilMethods.GetSqlString(config.DbType, ex.Sql, (SugarParameter[])ex.Parametres));
+        };
+    }
 
-            // 创建时间、更新时间生成策略
-            if (entityInfo.PropertyName == nameof(BaseAuditableEntity.CreatedOn) || entityInfo.PropertyName == nameof(BaseAuditableEntity.UpdatedOn))
-            {
-                entityInfo.SetValue(DateTime.Now);
-            }
-
-            // 创建人、更新人生成策略
-            if (entityInfo.PropertyName == nameof(BaseAuditableEntity.CreatedBy) || entityInfo.PropertyName == nameof(BaseAuditableEntity.UpdatedBy))
-            {
-                entityInfo.SetValue(httpContextAccessor.HttpContext?.User.Identity.Name ?? "匿名用户");
-            }
-        }
-        else if (entityInfo.OperationType == DataFilterType.UpdateByObject)
-        {
-            // 更新时间生成策略
-            if (entityInfo.PropertyName == nameof(BaseAuditableEntity.UpdatedOn))
-            {
-                entityInfo.SetValue(DateTime.Now);
-            }
-
-            // 更新人生成策略
-            if (entityInfo.PropertyName == nameof(BaseAuditableEntity.UpdatedBy))
-            {
-                entityInfo.SetValue(httpContextAccessor.HttpContext?.User.Identity.Name ?? "匿名用户");
-            }
-        }
-    };
-
-    db.Aop.OnError = (ex) =>
-    {
-        logger.LogError(ex, "SqlSugarException with sql \r\n {sql}", UtilMethods.GetSqlString(DbType.SqlServer, ex.Sql, (SugarParameter[])ex.Parametres));
-    };
 
     return db;
 });
