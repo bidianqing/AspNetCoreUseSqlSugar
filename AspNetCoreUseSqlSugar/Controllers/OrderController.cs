@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SqlSugar;
 
 namespace AspNetCoreUseSqlSugar.Controllers
@@ -56,7 +55,9 @@ namespace AspNetCoreUseSqlSugar.Controllers
             SELECT DISTINCT o.*
             FROM tb_order o
             INNER JOIN tb_order_item i ON o.id = i.order_id
-            where i.product_name like '%抽纸%'            
+            where i.product_name like '%抽纸%'     
+            order by o.id DESC
+            LIMIT 10 OFFSET 20; -- 第3页（每页10条）
             //*/
 
             return Ok(new { order.Id, Message = "Order created successfully." });
