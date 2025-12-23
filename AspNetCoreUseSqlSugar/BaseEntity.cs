@@ -19,7 +19,7 @@ namespace AspNetCoreUseSqlSugar
 
     public abstract class BaseEntity
     {
-        [SugarColumn(IsPrimaryKey = true)]
+        [SugarColumn(IsPrimaryKey = true, ColumnName = "id")]
         public virtual Guid Id { get; set; }
     }
 }
