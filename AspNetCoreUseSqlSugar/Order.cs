@@ -14,14 +14,14 @@ namespace AspNetCoreUseSqlSugar
         [SugarColumn(ColumnName = "user_id")]
         public Guid UserId { get; set; }
 
-        [SugarColumn(ColumnName = "is_deleted")]
+        [SugarColumn(ColumnName = "isdeleted")]
         public bool IsDeleted { get; set; }
     }
 
     [SugarTable("tb_order_item")]
     public class OrderItem : BaseAuditableEntity
     {
-        [SugarColumn(ColumnName = "is_deleted")]
+        [SugarColumn(ColumnName = "isdeleted")]
         public bool IsDeleted { get; set; }
 
         [SugarColumn(ColumnName = "order_id")]

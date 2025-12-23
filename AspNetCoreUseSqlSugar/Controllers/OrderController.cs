@@ -28,7 +28,7 @@ namespace AspNetCoreUseSqlSugar.Controllers
             {
                 OrderNo = "ORDsjff789737389",
                 OrderPrice = 299.99m,
-                IsDeleted = false
+                UserId = Guid.Parse("019b2b35-7cce-7b3f-a7fd-c68d9027d9a1")
             };
             await _orderRepository.InsertAsync(order);
 
