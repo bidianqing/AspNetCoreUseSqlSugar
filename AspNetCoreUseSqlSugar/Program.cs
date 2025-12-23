@@ -26,7 +26,7 @@ builder.Services.AddScoped<ISqlSugarClient>(sp =>
 
     foreach (var config in configs)
     {
-        db.Aop.OnLogExecuted = (sql, parameters) =>
+        db.GetConnection(config.ConfigId).Aop.OnLogExecuted = (sql, parameters) =>
         {
             var totalExecutedTime = db.Ado.SqlExecutionTime.TotalMilliseconds;
             if (logger.IsEnabled(LogLevel.Debug))
@@ -40,7 +40,7 @@ builder.Services.AddScoped<ISqlSugarClient>(sp =>
             }
         };
 
-        db.Aop.DataExecuting = (oldValue, entityInfo) =>
+        db.GetConnection(config.ConfigId).Aop.DataExecuting = (oldValue, entityInfo) =>
         {
             if (entityInfo.OperationType == DataFilterType.InsertByObject)
             {
@@ -80,13 +80,12 @@ builder.Services.AddScoped<ISqlSugarClient>(sp =>
             }
         };
 
-        db.Aop.OnError = (ex) =>
+        db.GetConnection(config.ConfigId).Aop.OnError = (ex) =>
         {
             logger.LogError(ex, "SqlSugarException with sql \r\n {sql}", 
                 UtilMethods.GetSqlString(config.DbType, ex.Sql, (SugarParameter[])ex.Parametres));
         };
     }
-
 
     return db;
 });
