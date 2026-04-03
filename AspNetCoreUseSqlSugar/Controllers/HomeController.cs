@@ -37,16 +37,16 @@ namespace AspNetCoreUseSqlSugar.Controllers
             //    })
             //    .ToList();
 
-            await _userRepository.InsertAsync(new User
-            {
-                Name = "tom",
-                Tags = new JArray { "老师", "工作中" },
-                Address = new JObject
-                {
-                    { "Province", "广东省" },
-                    { "City", "广州市" }
-                }
-            });
+            //await _userRepository.InsertAsync(new User
+            //{
+            //    Name = "tom",
+            //    //Tags = new JArray { "老师", "工作中" },
+            //    Address = new Address
+            //    {
+            //        City = "邢台",
+            //        District = "襄都区"
+            //    }
+            //});
 
             //await _userRepository.InsertRangeAsync(new List<User>
             //{
@@ -58,7 +58,9 @@ namespace AspNetCoreUseSqlSugar.Controllers
             //    }
             //});
 
-            return await _userRepository.GetListAsync(u => SqlFunc.JsonArrayAny(u.Tags, "老师"));
+            return await _userRepository.AsQueryable()
+                .Where("address ->> 'city' = '北京'")
+                .ToListAsync();
         }
     }
 }
