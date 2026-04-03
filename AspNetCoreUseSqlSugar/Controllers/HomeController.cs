@@ -23,9 +23,6 @@ namespace AspNetCoreUseSqlSugar.Controllers
         [HttpGet]
         public async Task<List<User>> Get()
         {
-            //var exp = Expressionable.Create<Order, User>();
-            //exp.And((t1, t2) => t1.OrderNo != null && t1.OrderNo != "" && new[] { "abc" }.Contains(t1.OrderNo));
-
             //_db.Queryable<Order>()
             //    .LeftJoin<User>((t1, t2) => t1.UserId == t2.Id)
             //    .Where(exp.ToExpression())
@@ -58,8 +55,12 @@ namespace AspNetCoreUseSqlSugar.Controllers
             //    }
             //});
 
+            var exp = Expressionable.Create<User>();
+            exp.And(t1 => t1.Name == "tom");
+
             return await _userRepository.AsQueryable()
-                .Where("address ->> 'city' = '北京'")
+                .Where(exp.ToExpression())
+                .WhereIF(true, "address ->> 'city' = @city", new { city = "北京" })
                 .ToListAsync();
         }
     }
