@@ -11,8 +11,8 @@ namespace AspNetCoreUseSqlSugar
 
         public bool IsDeleted { get; set; }
 
-        //[SugarColumn(IsJson = true)]
-        //public string[] Tags { get; set; }
+        [SugarColumn(IsJson = true)]
+        public string[] Tags { get; set; }
 
         /// <summary>
         /// 可以是JSON对应的对象

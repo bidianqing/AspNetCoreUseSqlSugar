@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SqlSugar;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace AspNetCoreUseSqlSugar.Controllers
@@ -37,7 +39,7 @@ namespace AspNetCoreUseSqlSugar.Controllers
             //await _userRepository.InsertAsync(new User
             //{
             //    Name = "tom",
-            //    //Tags = new JArray { "老师", "工作中" },
+            //    Tags = ["老师", "父亲"],
             //    Address = new Address
             //    {
             //        City = "邢台",
@@ -45,22 +47,16 @@ namespace AspNetCoreUseSqlSugar.Controllers
             //    }
             //});
 
-            //await _userRepository.InsertRangeAsync(new List<User>
-            //{
-            //    new() {
-            //        Name = "jerry"
-            //    },
-            //    new() {
-            //        Name = "lucy"
-            //    }
-            //});
-
             var exp = Expressionable.Create<User>();
             exp.And(t1 => t1.Name == "tom");
 
+            var whereTags = new List<string> { "老师", "父亲" };
+            var tags = JsonConvert.SerializeObject(whereTags);
+
             return await _userRepository.AsQueryable()
                 .Where(exp.ToExpression())
-                .WhereIF(true, "address ->> 'city' = @city", new { city = "北京" })
+                .WhereIF(true, "address ->> 'city' = @city", new { city = "邢台" })
+                .WhereIF(true, $"tags @> @tags::jsonb", new { tags })
                 .ToListAsync();
         }
     }
