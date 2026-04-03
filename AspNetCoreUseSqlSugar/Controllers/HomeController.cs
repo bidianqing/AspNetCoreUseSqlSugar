@@ -56,7 +56,7 @@ namespace AspNetCoreUseSqlSugar.Controllers
             return await _userRepository.AsQueryable()
                 .Where(exp.ToExpression())
                 .WhereIF(true, "address ->> 'city' = @city", new { city = "пол╗" })
-                .WhereIF(true, $"tags @> @tags::jsonb", new { tags })
+                .WhereIF(true, "tags @> @tags::jsonb", new { tags })
                 .ToListAsync();
         }
     }
