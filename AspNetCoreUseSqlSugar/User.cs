@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using SqlSugar;
-using System.Text.Json.Serialization;
 
 namespace AspNetCoreUseSqlSugar
 {
@@ -15,9 +14,9 @@ namespace AspNetCoreUseSqlSugar
         public string[] Tags { get; set; }
 
         /// <summary>
-        /// 可以是JSON对应的对象
+        /// JsonObject、JsonArray
         /// 只要能序列化成json的所有对象都可以
-        /// 默认使用Newtonsoft.Json进行序列化
+        /// https://github.com/DotNetNext/SqlSugar/blob/master/Src/Asp.NetCore2/SqlSugar/IntegrationServices/SerializeService.cs
         /// </summary>
         [SugarColumn(IsJson = true)]
         public Address Address { get; set; }
